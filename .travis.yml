@@ -1,0 +1,8 @@
+language: node_js
+node_js:
+  - "0.10"
+  - "4"
+  - "node"
+before_install:
+  - printf "@npm:registry=https://enterprise.npmjs.com" >> ~/.npmrc
+after_success: npm run coverage

@@ -1,0 +1,12 @@
+[Unit]
+Description=npme Rewrite Service
+
+[Service]
+TimeoutStartSec=0
+KillMode=none
+ExecStart=/usr/bin/node /root/couch-url-rewrite-proxy/bin/couch-url-rewrite-proxy.js start -p 8085 -u http://registry.npmjs.org --front-door-host https://npm-registry.whitewater.ibm.com
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
