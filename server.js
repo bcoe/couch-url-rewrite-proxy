@@ -19,6 +19,7 @@ function CouchUrlRewriteProxy (opts) {
       }),
       qs: req.query,
       json: true,
+      gzip: false,
       strictSSL: false
     }
     if (~['PUT', 'POST', 'DELETE'].indexOf(req.method)) payload.body = req.body
