@@ -14,9 +14,11 @@ function CouchUrlRewriteProxy (opts) {
     var payload = {
       method: req.method,
       url: url.resolve(opts.upstream, req.path),
-      headers: Object.assign(req.headers, {
+      headers: {
+        'user-agent': 'curl/7.29.0',
+        accept: '*/*',
         Host: 'registry.npmjs.org'
-      }),
+      },
       qs: req.query,
       json: true,
       gzip: false,
