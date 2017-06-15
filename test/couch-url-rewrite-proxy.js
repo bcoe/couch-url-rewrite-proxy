@@ -149,7 +149,7 @@ describe('couch-url-rewrite-proxy', function () {
     })
   })
 
-  it("handles corgi documents", function (done) {
+  it('handles corgi documents', function (done) {
     var jsonPath = '/tiny-tarball'
     var json = nock('http://www.example.com')
       .get(jsonPath)

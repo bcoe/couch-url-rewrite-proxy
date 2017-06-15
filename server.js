@@ -83,6 +83,6 @@ module.exports = function (opts, cb) {
   console.info('rewriting to FRONT_DOOR_HOST =', opts.frontDoorHost)
   var server = app.listen(opts.port, function () {
     console.info('listening on ', opts.port)
-    return cb(undefined, server)
+    return cb(null, server)
   })
 }
