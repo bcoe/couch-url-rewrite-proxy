@@ -3,7 +3,7 @@ var express = require('express')
 var app = express()
 var bodyParser = require('body-parser')
 var request = require('request')
-var npmUrls = require('@npm/npm-urls')
+var rewrite = require('./lib/rewrite')
 var url = require('url')
 
 app.use(bodyParser.json({ limit: '196mb', strict: false }))
@@ -20,7 +20,7 @@ function CouchUrlRewriteProxy (opts) {
         Host: 'registry.npmjs.org'
       },
       qs: req.query,
-      json: true,
+      json: false,
       gzip: false,
       strictSSL: false
     }
@@ -58,7 +58,7 @@ function CouchUrlRewriteProxy (opts) {
 
 function rewriteUrls (res, status, body, frontDoorHost) {
   try {
-    npmUrls.rewriteOldTarballUrls(frontDoorHost, body)
+    body = rewrite(body, 'batman')
   } catch (err) {
     console.error(err.message)
   }
