@@ -1,30 +1,40 @@
-var express = require('express')
+const express = require('express')
 
-var app = express()
-var bodyParser = require('body-parser')
-var request = require('request')
-var rewrite = require('./lib/rewrite')
-var url = require('url')
+const app = express()
+const bodyParser = require('body-parser')
+const replify = require('replify')
+const request = require('request')
+const rewrite = require('./lib/rewrite')
+const url = require('url')
+
+// monitor this thing.
+replify('couch-url-rewrite-proxy', app)
+setInterval(() => {
+  if (typeof process.memoryUsage === 'function') console.log(process.memoryUsage())
+}, 15000)
 
 app.use(bodyParser.json({ limit: '196mb', strict: false }))
 app.use(bodyParser.urlencoded({ extended: false, limit: '196mb' }))
 
 function CouchUrlRewriteProxy (opts) {
-  function proxy (req, res, next) {
+  function proxy (req, res) {
     var payload = {
       method: req.method,
       url: url.resolve(opts.upstream, req.path),
-      headers: {
+      headers: Object.assign({}, req.headers, {
         'user-agent': 'curl/7.29.0',
-        accept: '*/*',
-        Host: 'registry.npmjs.org'
-      },
+        accept: 'application/vnd.npm.install-v1+json, */*',
+        host: 'registry.npmjs.org'
+      }),
       qs: req.query,
       json: false,
-      gzip: false,
       strictSSL: false
     }
-    if (~['PUT', 'POST', 'DELETE'].indexOf(req.method)) payload.body = req.body
+
+    if (~['PUT', 'POST', 'DELETE'].indexOf(req.method)) {
+      payload.json = true
+      payload.body = req.body
+    }
 
     var rewrite
     if (
@@ -33,6 +43,7 @@ function CouchUrlRewriteProxy (opts) {
       !req.path.match(/\.tgz$/) && // tarball URLs.
       req.method === 'GET' // we should only rewrite GET requests!
     ) {
+      payload.gzip = true // fetch the JSON zipped, for performance goodness.
       rewrite = true
     } else {
       rewrite = false
@@ -58,7 +69,7 @@ function CouchUrlRewriteProxy (opts) {
 
 function rewriteUrls (res, status, body, frontDoorHost) {
   try {
-    body = rewrite(body, 'batman')
+    body = rewrite(body, frontDoorHost)
   } catch (err) {
     console.error(err.message)
   }
