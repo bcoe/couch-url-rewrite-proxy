@@ -6,7 +6,7 @@
   "bin": "bin/couch-url-rewrite-proxy.js",
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "//pretest": "standard",
+    "pretest": "standard",
     "test": "nyc mocha test/*.js",
     "release": "standard-version"
   },
